@@ -1,0 +1,161 @@
+#%RAML 1.0
+title: Using XML and JSON Schema
+
+schemas: # can also be used with 'types'
+  UserInline: |
+    {
+      "title": "User Schema",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      },
+      "required": ["nickname", "email"]
+    }
+  PersonInclude: !include user.json
+
+/user:
+  /login:
+    post:
+      body:
+        application/json:
+          type: object
+          properties: {
+            "nickname": {
+              "description": "Никнейм пользователя, указанный при регистрации(не менее 3 символов)",
+               "type": "string",
+               "minLength": 3,
+               "maxLength": 26
+             },
+             "password": {
+               "description": "Пароль пользователя, указанный при регистрации(не менее 6 символов)"
+               "type": "string",
+               "minLength": 6,
+               "maxLength": 26
+             }
+          }
+      responses:
+        200:
+          description: "Авторизация произведена успешно"
+          body:
+            application/json:
+              type: object
+              properties:
+                {
+                  "accessToken": {
+                    "type": "string"
+                  }
+                }
+        401:
+          description: "Неверный логин и/или пароль"
+          body:
+            application/json:
+              type: object
+              properties:
+                {
+                  "message": {
+                    "type": "string"
+                    }
+                }
+              example: {
+                "message": "rejected because of wrong authentication credentials"
+              }
+  /signup:
+    post:
+      description: "Регистрация нового пользователя"
+      body:
+        application/json:
+          type: object
+          properties: {
+            "nickname": {
+              "description": "Никнейм пользователя",
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 26
+            },
+
+            "password": {
+              "description": "Пароль",
+              "type": "string",
+              "minLength": 6,
+              "maxLength": 26
+            },
+
+            "firstName": {
+              "description": "Имя пользователя",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 30
+            },
+
+            "lastName": {
+              "description": "Фамилия пользователя",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 40
+            },
+
+            "email": {
+              "description": "Адрес электронной почты пользователя",
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 100
+            }
+          }
+/person:
+  post:
+    responses:
+      200:
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "$schema": "http://json-schema.org/draft-03/schema",
+                "id": "http://jsonschema.net",
+                "required": true,
+                "properties": {
+                  "songTitle": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "albumId": {
+                    "type": "string",
+                    "required": true,
+                    "minLength": 36,
+                    "maxLength": 36
+                  }
+                }
+              }
+            example: |
+              {
+                "songId": "550e8400-e29b-41d4-a716-446655440000",
+                "songTitle": "Get Lucky",
+                "albumId": "183100e3-0e2b-4404-a716-66104d440550"
+              }
+  get:
+    body:
+      application/json:
+        schema: | # can also be used with 'type'
+          {
+            "title": "Body Declaration Schema",
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              }
+            }
+          }

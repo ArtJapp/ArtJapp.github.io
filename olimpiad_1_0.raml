@@ -338,4 +338,16 @@ schemas: # can also be used with 'types'
   /languages:
     get:
       description: "возвращает список языков программирования, доступных для решения"
-
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties: {
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    type: string
+                  }
+                }
+              }

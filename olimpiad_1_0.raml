@@ -229,3 +229,111 @@ schemas: # can also be used with 'types'
                       "output": "YES"
                     }]
                   }]
+      /{id}:
+        get:
+          description: "Возвращает текст задачи id"
+          responses:
+            401:
+              description: "Будет пробрасываться, если пользователь не авторизован"
+            405:
+              description: "Олимпиада еще не начата"
+            200:
+              description: "Задание доступно"
+              body:
+                application/json:
+                  type: object
+                  properties: {
+                    "header": {
+                      description: "Заголовок задачи",
+                      "type": "string"
+                    },
+                    "body": {
+                      description: "Условие задачи",
+                      "type": "string"
+                    },
+                    "progress": {
+                      description: "описывает прогресс пользователя в решении",
+                      type: object,
+                      properties: {
+                        "code": {
+                          type: integer,
+                          description: "состояние (см в трелло в карточке Коды состояния решения)"
+                        },
+                        "tests_passed": {
+                          type: integer,
+                          description: "количество пройденных тестов"
+                        },
+                        "tests_count": {
+                          type: integer,
+                          description: "общее число тестов"
+                        }
+                      }
+                    },
+                    "pictures": {
+                      description: "Иллюстарции к задаче (если имеются)",
+                      "required": "false",
+                      "type": "array",
+                      "items": {
+                        type: string
+                      }
+                    },
+                    "examples":
+                      {
+                        "type": "array",
+                        "items": {
+                          type: object,
+                          properties: {
+                            "input": {
+                              type: string
+                            },
+                            "output": {
+                              type: string
+                            }
+                          }
+                        }
+                        }
+                    }
+                example: |
+                  {
+                    "header": "Задача",
+                    "body": "Многобуквенный текст задачи..............",
+                    "progress": {
+                        "code": 1,
+                        "tests_passed": 4,
+                        "tests_count": 4
+                    },
+                    "pictures": [
+                      "https://mondrian.mashable.com/2016%252F09%252F22%252Fb5%252F592857175_640.73223.jpg%252F1200x630.jpg?signature=R9W_YTladVpWShfFUQ4Ja6vLZI4="
+                    ],
+                    "examples": [{
+                      "input": "1 2 3 4 5 6",
+                      "output": "YES"
+                    }]
+                  }
+        /send:
+          post:
+            description: "Отправка пользовательского решения"
+            body:
+              application/json:
+                type: object
+                properties:
+                  language: {
+                    description: "значение будет выбрано из массива, полученного по запросу system/languages"
+                    type: string
+                  }
+                  user_id: {
+                    type: string
+                  }
+                  solution: {
+                    description: "текст кода (стоит рассчитывать на очень длинные реализации решения)"
+                    type: string
+                  }
+            responses:
+              200:
+                description: "решение получено"
+
+/system:
+  /languages:
+    get:
+      description: "возвращает список языков программирования, доступных для решения"
+

@@ -147,9 +147,28 @@ schemas: # can also be used with 'types'
         description: "При условии, что пользователь авторизован"
         body:
           application/json:
-            type: array
-            items:
-              type: Contest
+            type: object
+            properties: {
+              available_contests: {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    name: {
+                      "type": "string"
+                    },
+                    start_at: {
+                      "type": "datetime"
+                    },
+                    duration: {
+                      "type": "integer",
+                      "description": "длительность олимпиады (в секундах)"
+                    }
+                  }
+                }
+              }
+            }
+
       401:
         description: "Будет пробрасываться, если пользователь не авторизован"
 
@@ -174,6 +193,9 @@ schemas: # can also be used with 'types'
                 }
         401:
           description: "Будет пробрасываться, если пользователь не авторизован"
+    /participate:
+      post:
+        description: "записаться на участие в олимпиаде"
 
     /tasks:
       get:

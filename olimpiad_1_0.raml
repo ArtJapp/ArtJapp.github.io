@@ -24,6 +24,33 @@ schemas: # can also be used with 'types'
     }
   PersonInclude: !include user.json
 
+  Contest:
+    properties:
+      name: string
+      start_at: datetime
+      duration: {
+        type: integer
+        description: "длительность олимпиады (в секундах)"
+      }
+
+  Example:
+    properties:
+      input: string
+      output: string
+
+  Task:
+    properties:
+      header: string
+      body: string
+      pictures: {
+        type: array
+        items: string
+      }
+      examples: {
+        type: array
+        items: Example
+      }
+
 /user:
   /login:
     post:
@@ -112,50 +139,93 @@ schemas: # can also be used with 'types'
               "maxLength": 100
             }
           }
-/person:
-  post:
+/contest:
+  get:
+    description: "Выдает список доступных олимпиад (отсортирован по возрастанию дат)"
     responses:
       200:
+        description: "При условии, что пользователь авторизован"
         body:
           application/json:
-            type: |
-              {
-                "type": "object",
-                "$schema": "http://json-schema.org/draft-03/schema",
-                "id": "http://jsonschema.net",
-                "required": true,
-                "properties": {
-                  "songTitle": {
-                    "type": "string",
-                    "required": true
-                  },
-                  "albumId": {
-                    "type": "string",
-                    "required": true,
-                    "minLength": 36,
-                    "maxLength": 36
-                  }
+            type: array
+            items:
+              type: Contest
+      401:
+        description: "Будет пробрасываться, если пользователь не авторизован"
+
+  /{constestID}:
+    get:
+      description: "Возвращает данные об олимпиаде с ИД contestID"
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties:
+                name: {
+                  "type": "string"
                 }
-              }
-            example: |
-              {
-                "songId": "550e8400-e29b-41d4-a716-446655440000",
-                "songTitle": "Get Lucky",
-                "albumId": "183100e3-0e2b-4404-a716-66104d440550"
-              }
-  get:
-    body:
-      application/json:
-        schema: | # can also be used with 'type'
-          {
-            "title": "Body Declaration Schema",
-            "type": "object",
-            "properties": {
-              "firstName": {
-                "type": "string"
-              },
-              "lastName": {
-                "type": "string"
-              }
-            }
-          }
+                start_at: {
+                  "type": "datetime"
+                }
+                duration: {
+                  "type": "integer",
+                  "description": "длительность олимпиады (в секундах)"
+                }
+        401:
+          description: "Будет пробрасываться, если пользователь не авторизован"
+
+    /tasks:
+      get:
+        description: "Запрос на получение заданий олимпиады"
+        responses:
+          401:
+            description: "Будет пробрасываться, если пользователь не авторизован"
+          405:
+            description: "Олимпиада еще не начата"
+          200:
+            description: "Олимпиада начата, список заданий к ней доступен"
+            body:
+              application/json:
+                type: array
+                items:
+                  type: object
+                  properties:
+                   {
+                    "header": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "pictures": {
+                      "required": "false",
+                      "type": "array[string]"
+                    },
+                    "examples":
+                      {
+                        "type": "array",
+                        "items": {
+                          type: object,
+                          properties:
+                            input: {
+                              type: string
+                            }
+                            output: {
+                              type: string
+                            }
+                        }
+                      }
+                    }
+                example: |
+                  [{
+                    "header": "Задача",
+                    "body": "Многобуквенный текст задачи..............",
+                    "pictures": [
+                      "https://mondrian.mashable.com/2016%252F09%252F22%252Fb5%252F592857175_640.73223.jpg%252F1200x630.jpg?signature=R9W_YTladVpWShfFUQ4Ja6vLZI4="
+                    ],
+                    "examples": [{
+                      "input": "1 2 3 4 5 6",
+                      "output": "YES"
+                    }]
+                  }]

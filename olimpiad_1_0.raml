@@ -187,6 +187,10 @@ schemas: # can also be used with 'types'
                 start_at: {
                   "type": "datetime"
                 }
+                takes_part: {
+                  "type": "boolean",
+                  "description": "флаг, показывающий, участвует ли пользователь в олимпиаде или нет"
+                }
                 duration: {
                   "type": "integer",
                   "description": "длительность олимпиады (в секундах)"
@@ -196,6 +200,15 @@ schemas: # can also be used with 'types'
     /participate:
       post:
         description: "записаться на участие в олимпиаде"
+        responses:
+          200:
+            description: "пользователь записался"
+          210:
+            description: "пользователь уже был записан (нужно фиксировать такие моменты, это явно лаг)"
+          401:
+            description: "пользователь не авторизован"
+          404:
+            description: "запрашиваемая олимпиада не существует"
 
     /tasks:
       get:

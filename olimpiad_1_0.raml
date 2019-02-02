@@ -162,6 +162,7 @@ schemas: # can also be used with 'types'
           }
 /contest:
   get:
+    securedBy: [jwt]
     description: "Выдает список доступных олимпиад (отсортирован по возрастанию дат)"
     responses:
       200:
@@ -195,6 +196,7 @@ schemas: # can also be used with 'types'
 
   /{constestID}:
     get:
+      securedBy: [jwt]
       description: "Возвращает данные об олимпиаде с ИД contestID"
       responses:
         200:
@@ -219,6 +221,7 @@ schemas: # can also be used with 'types'
         401:
           description: "Будет пробрасываться, если пользователь не авторизован"
     /participate:
+      securedBy: [jwt]
       post:
         description: "записаться на участие в олимпиаде"
         responses:
@@ -232,6 +235,7 @@ schemas: # can also be used with 'types'
             description: "запрашиваемая олимпиада не существует"
 
     /tasks:
+      securedBy: [jwt]
       get:
         description: "Запрос на получение заданий олимпиады"
         responses:
@@ -286,6 +290,7 @@ schemas: # can also be used with 'types'
                     }]
                   }]
       /{id}:
+        securedBy: [jwt]
         get:
           description: "Возвращает текст задачи id"
           responses:
@@ -369,6 +374,7 @@ schemas: # can also be used with 'types'
                     ]
                   }
         /send:
+          securedBy: [jwt]
           post:
             description: "Отправка пользовательского решения"
             body:

@@ -1,6 +1,27 @@
 #%RAML 1.0
 title: Contest site
 
+documentation:
+    - title: Курсовая работа (дока)
+      content: |
+                API документация сайта для проведения интернет-олимпиад по программированию
+traits:
+  searchable:
+    queryParameters:
+      query:
+        description: I don't actually know what it is
+
+securitySchemes:
+  jwt:
+      type: x-jwt
+      describedBy:
+        headers:
+          Authorization:
+            description: Valid JSON Web Token
+            example: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+        responses:
+          401:
+
 schemas: # can also be used with 'types'
   UserInline: |
     {

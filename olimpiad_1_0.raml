@@ -176,6 +176,9 @@ schemas: # can also be used with 'types'
                 "items": {
                   "type": "object",
                   "properties": {
+                    id: {
+                      "type": "integer"
+                    },
                     name: {
                       "type": "string"
                     },
@@ -204,6 +207,9 @@ schemas: # can also be used with 'types'
             application/json:
               type: object
               properties:
+                id: {
+                  "type": "integer"
+                }
                 name: {
                   "type": "string"
                 }
@@ -252,11 +258,37 @@ schemas: # can also be used with 'types'
                   type: object
                   properties:
                    {
+                   "id": {
+                      description: "id задачи",
+                      "type": "integer"
+                    },
                     "header": {
                       "type": "string"
                     },
                     "body": {
                       "type": "string"
+                    },
+                    "efforts_available": {
+                      type: integer,
+                      description: "оставшееся число попыток"
+                    },
+                    "progress": {
+                      description: "описывает прогресс пользователя в решении",
+                      type: object,
+                      properties: {
+                        "code": {
+                          type: integer,
+                          description: "состояние (см в трелло в карточке Коды состояния решения)"
+                        },
+                        "tests_passed": {
+                          type: integer,
+                          description: "количество пройденных тестов"
+                        },
+                        "tests_count": {
+                          type: integer,
+                          description: "общее число тестов"
+                        }
+                      }
                     },
                     "pictures": {
                       "required": "false",
@@ -279,8 +311,15 @@ schemas: # can also be used with 'types'
                     }
                 example: |
                   [{
+                    "id": 4,
                     "header": "Задача",
                     "body": "Многобуквенный текст задачи..............",
+                    "efforts_available": 5,
+                    "progress": {
+                        "code": 1,
+                        "tests_passed": 4,
+                        "tests_count": 4
+                    },
                     "pictures": [
                       "https://mondrian.mashable.com/2016%252F09%252F22%252Fb5%252F592857175_640.73223.jpg%252F1200x630.jpg?signature=R9W_YTladVpWShfFUQ4Ja6vLZI4="
                     ],
@@ -304,6 +343,10 @@ schemas: # can also be used with 'types'
                 application/json:
                   type: object
                   properties: {
+                    "id": {
+                      description: "id задачи",
+                      "type": "integer"
+                    },
                     "header": {
                       description: "Заголовок задачи",
                       "type": "string"
@@ -311,6 +354,10 @@ schemas: # can also be used with 'types'
                     "body": {
                       description: "Условие задачи",
                       "type": "string"
+                    },
+                    "efforts_available": {
+                      type: integer,
+                      description: "оставшееся число попыток"
                     },
                     "progress": {
                       description: "описывает прогресс пользователя в решении",
@@ -356,8 +403,10 @@ schemas: # can also be used with 'types'
                     }
                 example: |
                   {
+                    "id": 4,
                     "header": "Задача",
                     "body": "Многобуквенный текст задачи..............",
+                    "efforts_available": 5,
                     "progress": {
                         "code": 1,
                         "tests_passed": 4,
@@ -395,6 +444,50 @@ schemas: # can also be used with 'types'
             responses:
               200:
                 description: "решение получено"
+        /myresults:
+          securedBy: [jwt]
+          get:
+            description: "возвращает список пользовательских посылок"
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                       {
+                         "id": {
+                            description: "id посылки",
+                            "type": "integer"
+                          },
+                          "date_posted": {
+                            description: "дата и время посылки решения",
+                            "type": "datetime"
+                          },
+                          "progress": {
+                            description: "описывает прогресс пользователя в решении",
+                            type: object,
+                            properties: {
+                              "code": {
+                                type: integer,
+                                description: "состояние (см в трелло в карточке Коды состояния решения)"
+                              },
+                              "tests_passed": {
+                                type: integer,
+                                description: "количество пройденных тестов"
+                              },
+                              "tests_count": {
+                                type: integer,
+                                description: "общее число тестов"
+                              }
+                            }
+                          }
+                        }
+              401:
+                description: "пользователь не авторизован"
+              404:
+                description: "запрашиваемая задача не существует"
 
 /system:
   /languages:

@@ -70,9 +70,13 @@ body {
     text-shadow: 0 -1px 0 #FF6E48, 0 1px 0 #f04413, 0 0 40px rgba(0, 0, 0, 1);
 }
 
+.navigation {
+    margin-top: 20px;
+}
+
 a.navigation_button {
     width: 100%;
-    padding: 16px 24px;
+    padding: 16px 20px;
     background: transparent;
     border: #ff4a1c 2px solid;
     font-size: 20px;

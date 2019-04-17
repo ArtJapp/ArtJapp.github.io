@@ -24,7 +24,8 @@ body {
 }
 
 .flip-counter {
-    /*display: inline-block;*/
+    min-height: 100px;
+    display: inline-block;
     /* Firefox */
     display: -moz-box;
     -moz-box-pack: center;

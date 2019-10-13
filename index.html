@@ -12,54 +12,34 @@
     <meta charset="UTF-8">
 </head>
 <body>
-<div class="container-fluid">
-<div class="row d-flex justify-content-end">
-    <div class="navigation col-3 ">
-        <a href="documentation.html" class="navigation_button">Documentation</a>
-    </div>
-</div>
 
-
-    <div class="header">
-        <h1>
-            <a href="#">ContestIO</a>
-        </h1>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 col-sm-12">
-
-            <p class="info">До релиза сервера осталось</p>
-            <div class="clock flip-counter" style="margin:4em 0;"></div>
-            <div class="message"></div>
+<div class="wrap">
+    <div class="container">
+        <div class="header">
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-6"></div>
+                <div class="col-3">
+                    <div class="img-wrap tar">
+                        <img class="dib" src="surf.svg" alt="surf image">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="center mt-30">
+                I am Artem Japparov. A am working now at SurfStudio. 
+            </div>
+            
+            <div class="row mt-60">
+                <div class="col-3"><img src="android.gif" alt="android image" class="lang-img"></div>
+                <div class="col-3"><img src="java.jpeg" alt="java image" class="lang-img"></div>
+                <div class="col-3"><img src="kotlin.png" alt="kotlin image" class="lang-img"></div>
+                <div class="col-3"><img src="python.jpeg"python alt="python image" class="lang-img"></div>
+            </div>
         </div>
     </div>
-
 </div>
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="clock.js"></script>
-<script type="text/javascript">
-    var finalDate = new Date(2019, 4, 25);
-    var now = new Date();
-
-    $(document).ready(function() {
-        var clock;
-        clock = $('.clock').FlipClock({
-            clockFace: 'DailyCounter',
-            language: 'ru',
-            autoStart: false,
-            callbacks: {
-                stop: function() {
-                    $('.message').html('Работа сдана')
-                }
-            }
-        });
-        clock.setTime((finalDate.getTime() - now.getTime()) / 1000);
-        clock.setCountdown(true);
-        clock.start();
-    });
-</script>
 
 </body>
 </html>

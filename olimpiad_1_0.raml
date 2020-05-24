@@ -1,0 +1,515 @@
+#%RAML 1.0
+title: Contest site
+
+documentation:
+    - title: Курсовая работа (дока)
+      content: |
+                API документация сайта для проведения интернет-олимпиад по программированию
+traits:
+  searchable:
+    queryParameters:
+      query:
+        description: I don't actually know what it is
+
+securitySchemes:
+  jwt:
+      type: x-jwt
+      describedBy:
+        headers:
+          Authorization:
+            description: Valid JSON Web Token
+            example: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+        responses:
+          401:
+
+schemas: # can also be used with 'types'
+  UserInline: |
+    {
+      "title": "User Schema",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      },
+      "required": ["nickname", "email"]
+    }
+  PersonInclude: !include user.json
+
+  Contest:
+    properties:
+      name: string
+      start_at: datetime
+      duration: {
+        type: integer
+        description: "длительность олимпиады (в секундах)"
+      }
+
+  Example:
+    properties:
+      input: string
+      output: string
+
+  Task:
+    properties:
+      header: string
+      body: string
+      pictures: {
+        type: array
+        items: string
+      }
+      examples: {
+        type: array
+        items: Example
+      }
+
+/user:
+  /login:
+    post:
+      body:
+        application/json:
+          type: object
+          properties: {
+            "nickname": {
+              "description": "Никнейм пользователя, указанный при регистрации(не менее 3 символов)",
+               "type": "string",
+               "minLength": 3,
+               "maxLength": 26
+             },
+             "password": {
+               "description": "Пароль пользователя, указанный при регистрации(не менее 6 символов)"
+               "type": "string",
+               "minLength": 6,
+               "maxLength": 26
+             }
+          }
+      responses:
+        200:
+          description: "Авторизация произведена успешно"
+          body:
+            application/json:
+              type: object
+              properties:
+                {
+                  "accessToken": {
+                    "type": "string"
+                  }
+                }
+        401:
+          description: "Неверный логин и/или пароль"
+          body:
+            application/json:
+              type: object
+              properties:
+                {
+                  "message": {
+                    "type": "string"
+                    }
+                }
+              example: {
+                "message": "rejected because of wrong authentication credentials"
+              }
+  /signup:
+    post:
+      description: "Регистрация нового пользователя"
+      body:
+        application/json:
+          type: object
+          properties: {
+            "nickname": {
+              "description": "Никнейм пользователя",
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 26
+            },
+
+            "password": {
+              "description": "Пароль",
+              "type": "string",
+              "minLength": 6,
+              "maxLength": 26
+            },
+
+            "firstName": {
+              "description": "Имя пользователя",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 30
+            },
+
+            "lastName": {
+              "description": "Фамилия пользователя",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 40
+            },
+
+            "email": {
+              "description": "Адрес электронной почты пользователя",
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 100
+            }
+          }
+/contest:
+  get:
+    securedBy: [jwt]
+    description: "Выдает список доступных олимпиад (отсортирован по возрастанию дат)"
+    responses:
+      200:
+        description: "При условии, что пользователь авторизован"
+        body:
+          application/json:
+            type: object
+            properties: {
+              available_contests: {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    id: {
+                      "type": "integer"
+                    },
+                    name: {
+                      "type": "string"
+                    },
+                    start_at: {
+                      "type": "datetime"
+                    },
+                    duration: {
+                      "type": "integer",
+                      "description": "длительность олимпиады (в секундах)"
+                    }
+                  }
+                }
+              }
+            }
+
+      401:
+        description: "Будет пробрасываться, если пользователь не авторизован"
+
+  /{constestID}:
+    get:
+      securedBy: [jwt]
+      description: "Возвращает данные об олимпиаде с ИД contestID"
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties:
+                id: {
+                  "type": "integer"
+                }
+                name: {
+                  "type": "string"
+                }
+                start_at: {
+                  "type": "datetime"
+                }
+                takes_part: {
+                  "type": "boolean",
+                  "description": "флаг, показывающий, участвует ли пользователь в олимпиаде или нет"
+                }
+                duration: {
+                  "type": "integer",
+                  "description": "длительность олимпиады (в секундах)"
+                }
+        401:
+          description: "Будет пробрасываться, если пользователь не авторизован"
+    /participate:
+      securedBy: [jwt]
+      post:
+        description: "записаться на участие в олимпиаде"
+        responses:
+          200:
+            description: "пользователь записался"
+          210:
+            description: "пользователь уже был записан (нужно фиксировать такие моменты, это явно лаг)"
+          401:
+            description: "пользователь не авторизован"
+          404:
+            description: "запрашиваемая олимпиада не существует"
+
+    /tasks:
+      securedBy: [jwt]
+      get:
+        description: "Запрос на получение заданий олимпиады"
+        responses:
+          401:
+            description: "Будет пробрасываться, если пользователь не авторизован"
+          405:
+            description: "Олимпиада еще не начата"
+          200:
+            description: "Олимпиада начата, список заданий к ней доступен"
+            body:
+              application/json:
+                type: array
+                items:
+                  type: object
+                  properties:
+                   {
+                   "id": {
+                      description: "id задачи",
+                      "type": "integer"
+                    },
+                    "header": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "efforts_available": {
+                      type: integer,
+                      description: "оставшееся число попыток"
+                    },
+                    "progress": {
+                      description: "описывает прогресс пользователя в решении",
+                      type: object,
+                      properties: {
+                        "code": {
+                          type: integer,
+                          description: "состояние (см в трелло в карточке Коды состояния решения)"
+                        },
+                        "tests_passed": {
+                          type: integer,
+                          description: "количество пройденных тестов"
+                        },
+                        "tests_count": {
+                          type: integer,
+                          description: "общее число тестов"
+                        }
+                      }
+                    },
+                    "pictures": {
+                      "required": "false",
+                      "type": "array[string]"
+                    },
+                    "examples":
+                      {
+                        "type": "array",
+                        "items": {
+                          type: object,
+                          properties:
+                            input: {
+                              type: string
+                            }
+                            output: {
+                              type: string
+                            }
+                        }
+                      }
+                    }
+                example: |
+                  [{
+                    "id": 4,
+                    "header": "Задача",
+                    "body": "Многобуквенный текст задачи..............",
+                    "efforts_available": 5,
+                    "progress": {
+                        "code": 1,
+                        "tests_passed": 4,
+                        "tests_count": 4
+                    },
+                    "pictures": [
+                      "https://mondrian.mashable.com/2016%252F09%252F22%252Fb5%252F592857175_640.73223.jpg%252F1200x630.jpg?signature=R9W_YTladVpWShfFUQ4Ja6vLZI4="
+                    ],
+                    "examples": [{
+                      "input": "1 2 3 4 5 6",
+                      "output": "YES"
+                    }]
+                  }]
+      /{id}:
+        securedBy: [jwt]
+        get:
+          description: "Возвращает текст задачи id"
+          responses:
+            401:
+              description: "Будет пробрасываться, если пользователь не авторизован"
+            405:
+              description: "Олимпиада еще не начата"
+            200:
+              description: "Задание доступно"
+              body:
+                application/json:
+                  type: object
+                  properties: {
+                    "id": {
+                      description: "id задачи",
+                      "type": "integer"
+                    },
+                    "header": {
+                      description: "Заголовок задачи",
+                      "type": "string"
+                    },
+                    "body": {
+                      description: "Условие задачи",
+                      "type": "string"
+                    },
+                    "efforts_available": {
+                      type: integer,
+                      description: "оставшееся число попыток"
+                    },
+                    "progress": {
+                      description: "описывает прогресс пользователя в решении",
+                      type: object,
+                      properties: {
+                        "code": {
+                          type: integer,
+                          description: "состояние (см в трелло в карточке Коды состояния решения)"
+                        },
+                        "tests_passed": {
+                          type: integer,
+                          description: "количество пройденных тестов"
+                        },
+                        "tests_count": {
+                          type: integer,
+                          description: "общее число тестов"
+                        }
+                      }
+                    },
+                    "pictures": {
+                      description: "Иллюстарции к задаче (если имеются)",
+                      "required": "false",
+                      "type": "array",
+                      "items": {
+                        type: string
+                      }
+                    },
+                    "examples":
+                      {
+                        "type": "array",
+                        "items": {
+                          type: object,
+                          properties: {
+                            "input": {
+                              type: string
+                            },
+                            "output": {
+                              type: string
+                            }
+                          }
+                        }
+                        }
+                    }
+                example: |
+                  {
+                    "id": 4,
+                    "header": "Задача",
+                    "body": "Многобуквенный текст задачи..............",
+                    "efforts_available": 5,
+                    "progress": {
+                        "code": 1,
+                        "tests_passed": 4,
+                        "tests_count": 4
+                    },
+                    "pictures": [
+                      "https://mondrian.mashable.com/2016%252F09%252F22%252Fb5%252F592857175_640.73223.jpg%252F1200x630.jpg?signature=R9W_YTladVpWShfFUQ4Ja6vLZI4="
+                    ],
+                    "examples": [
+                      {
+                        "input": "1 2 3 4 5 6",
+                        "output": "YES"
+                      }
+                    ]
+                  }
+        /send:
+          securedBy: [jwt]
+          post:
+            description: "Отправка пользовательского решения"
+            body:
+              application/json:
+                type: object
+                properties:
+                  language: {
+                    description: "значение будет выбрано из массива, полученного по запросу system/languages"
+                    type: string
+                  }
+                  user_id: {
+                    type: string
+                  }
+                  solution: {
+                    description: "текст кода (стоит рассчитывать на очень длинные реализации решения)"
+                    type: string
+                  }
+            responses:
+              200:
+                description: "решение получено"
+        /myresults:
+          securedBy: [jwt]
+          get:
+            description: "возвращает список пользовательских посылок"
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                       {
+                         "id": {
+                            description: "id посылки",
+                            "type": "integer"
+                          },
+                          "date_posted": {
+                            description: "дата и время посылки решения",
+                            "type": "datetime"
+                          },
+                          "progress": {
+                            description: "описывает прогресс пользователя в решении",
+                            type: object,
+                            properties: {
+                              "code": {
+                                type: integer,
+                                description: "состояние (см в трелло в карточке Коды состояния решения)"
+                              },
+                              "tests_passed": {
+                                type: integer,
+                                description: "количество пройденных тестов"
+                              },
+                              "tests_count": {
+                                type: integer,
+                                description: "общее число тестов"
+                              }
+                            }
+                          }
+                        }
+              401:
+                description: "пользователь не авторизован"
+              404:
+                description: "запрашиваемая задача не существует"
+
+/system:
+  /languages:
+    get:
+      description: "возвращает список языков программирования, доступных для решения"
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties: {
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    type: string
+                  }
+                }
+              }
+            example: |
+              {
+                "languages": [
+                  "GNU G++ 14", "GNU G++ 17", "Java 1.8", "Python 2.7", "Python 3.7"
+                ]
+              }
+

@@ -1,0 +1,91 @@
+@font-face {
+    font-family: 'LogoFont';
+    src: url('oleo-script-webfont.eot'); /* IE9 Compat Modes */
+         url('oleo-script-webfont.woff') format('woff'), /* Modern Browsers */
+         url('oleo-script-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: #ccc;
+}
+
+body {
+    background-color: #111;
+    background-image: url("background.png");
+    min-width: 664px;
+    width: auto !important;
+    height: 90%;
+    display: block;
+    align-items: center;
+}
+
+.flip-counter {
+    min-height: 100px;
+    display: inline-block;
+    /* Firefox */
+    display: -moz-box;
+    -moz-box-pack: center;
+    -moz-box-align: center;
+
+    /* Safari and Chrome */
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+
+    /* W3C */
+    display: box;
+    box-pack: center;
+    box-align: center;
+}
+
+.container-fluid {
+    color: rgb(168, 168, 168);
+    text-align: center;
+    position: relative;
+    top: 45%;
+    transform: translateY(-55%);
+}
+
+.info {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    text-align: center;
+    margin: 1em 0;
+}
+
+.header h1 a {
+    font-family: LogoFont, "Oleo Script", cursive, sans-serif;
+    font-size: 99px;
+    text-decoration: none;
+    line-height: inherit;
+    color: #ff4a1c;
+    text-shadow: 0 -1px 0 #FF6E48, 0 1px 0 #f04413, 0 0 40px rgba(0, 0, 0, 1);
+}
+
+.navigation {
+    margin-top: 20px;
+}
+
+a.navigation_button {
+    width: 100%;
+    padding: 16px 20px;
+    background: transparent;
+    border: #ff4a1c 2px solid;
+    font-size: 20px;
+    color: #ff4a1c;
+    font-family: LogoFont, cursive, sans-serif;
+    text-decoration: none;
+}
+
+a.navigation_button:before {
+    text-decoration: none;
+    color: #ff4a1c;
+}

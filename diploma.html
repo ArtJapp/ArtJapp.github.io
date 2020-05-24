@@ -1,0 +1,65 @@
+<html>
+<head>
+    <link rel="stylesheet" href="clockstyle.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="timerstyle.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <script src="clock.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
+    <meta charset="UTF-8">
+</head>
+<body>
+<div class="container-fluid">
+<div class="row d-flex justify-content-end">
+    <div class="navigation col-3 ">
+        <a href="documentation.html" class="navigation_button">Old Documentation</a>
+    </div>
+</div>
+
+    <div class="header">
+        <h1>
+            <a href="#">Swaggery</a>
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+
+            <p class="info">До защиты диплома осталось</p>
+            <div class="clock flip-counter" style="margin:4em 0;"></div>
+            <div class="message"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="clock.js"></script>
+<script type="text/javascript">
+    var finalDate = new Date(2020, 5, 22);
+    var now = new Date();
+
+    $(document).ready(function() {
+        var clock;
+        clock = $('.clock').FlipClock({
+            clockFace: 'DailyCounter',
+            language: 'ru',
+            autoStart: false,
+            callbacks: {
+                stop: function() {
+                    $('.message').html('Работа сдана')
+                }
+            }
+        });
+        clock.setTime((finalDate.getTime() - now.getTime()) / 1000);
+        clock.setCountdown(true);
+        clock.start();
+    });
+</script>
+
+</body>
+</html>

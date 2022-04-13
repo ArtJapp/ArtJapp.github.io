@@ -10,8 +10,10 @@
 <script type="text/javascript">
 function onLoad(){
     var code = new URL(location.href).searchParams.get("code");
-    var urlLink = "infi://signup/confirm?code=" + code;
-    document.getElementById('signup_confirm').setAttribute('href', urlLink);
+    var confirmUrlLink = "infi://signup/confirm?code=" + code;
+    var confirmResetUrlLink = "infi://reset_password/confirm?code=" + code;
+    document.getElementById('signup_confirm').setAttribute('href', confirmUrlLink);
+    document.getElementById('reset_confirm').setAttribute('href', confirmResetUrlLink);
 }
 window.onload = onLoad;
 
@@ -23,7 +25,8 @@ window.onload = onLoad;
     <div class="container-fluid">
 
         <div class=" h-100 d-flex justify-content-center align-items-center">
-            <a class="btn btn-primary" id="signup_confirm" role="button">Link</a>
+            <a class="btn btn-primary" id="signup_confirm" role="button">Confirm Signup</a>
+            <a class="btn btn-primary" id="reset_confirm" role="button">Confirm Reset</a>
         </div>
 </div>
 

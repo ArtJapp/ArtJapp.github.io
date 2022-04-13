@@ -11,7 +11,7 @@
 function onLoad(){
     var code = new URL(location.href).searchParams.get("code");
     var urlLink = "infi://signup/confirm?code=" + code;
-    document.getElementById('yourLink').setAttribute('href', urlLink);
+    document.getElementById('signup_confirm').setAttribute('href', urlLink);
 }
 window.onload = onLoad;
 

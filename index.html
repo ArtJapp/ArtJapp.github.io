@@ -6,13 +6,24 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
     <meta charset="UTF-8">
+    <script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+function onLoad(){
+    var code = new URL(location.href).searchParams.get("code");
+    var urlLink = "infi://signup/confirm?code=" + code;
+    document.getElementById('yourLink').setAttribute('href', urlLink);
+}
+window.onload = onLoad;
+
+
+</script>
 </head>
 
 <body>
     <div class="container-fluid">
 
         <div class=" h-100 d-flex justify-content-center align-items-center">
-            <a class="btn btn-primary" href="https://app.unicredit.ru?id=12345" role="button">Link</a>
+            <a class="btn btn-primary" id="signup_confirm" role="button">Link</a>
         </div>
 </div>
 
